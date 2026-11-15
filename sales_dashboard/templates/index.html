@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Turn a sales CSV into a clear dashboard and a polished PDF report. No account, no setup, just your data."
+    />
+    <title>Salesboard — Sales CSV Dashboard & PDF Report</title>
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.svg') }}"
+      type="image/svg+xml"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Salesboard home"
+        ><span class="brand-mark" aria-hidden="true">s<span>·</span></span
+        ><span
+          >salesboard<span class="brand-caption">CSV TO CLARITY</span></span
+        ></a
+      >
+      <div class="workspace">
+        <span class="workspace-icon">W</span>
+        <div>My workspace<small>Sales analytics</small></div>
+        <span class="workspace-dot" aria-hidden="true"></span>
+      </div>
+      <span class="nav-caption">WORKSPACE</span>
+      <nav aria-label="Main navigation">
+        <a class="nav-link active" href="#overview"
+          ><span data-icon="grid"></span>Overview<span class="nav-end"
+            >01</span
+          ></a
+        >
+        <a class="nav-link" href="#quality"
+          ><span data-icon="check"></span>Data quality</a
+        >
+        <a class="nav-link" href="#preview"
+          ><span data-icon="table"></span>Data preview</a
+        >
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="report-promo">
+          <span class="promo-icon" data-icon="report"></span
+          ><strong>Good data. Great reports.</strong>
+          <p>A share-ready PDF, without the spreadsheet busywork.</p>
+          <button class="text-button guide-button">
+            What's in the report <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+        <button class="help-button guide-button">
+          <span data-icon="help"></span>CSV format & help
+        </button>
+        <div class="sidebar-footer">
+          <span class="status-dot"></span> No account required<span>v1.0</span>
+        </div>
+      </div>
+    </aside>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <span class="breadcrumb">Workspace</span><span class="slash">/</span
+          ><strong>Sales overview</strong>
+        </div>
+        <span class="local-badge"
+          ><span class="status-dot"></span>Local-first workspace</span
+        >
+      </header>
+      <main id="main">
+        <section id="overview" class="page-heading">
+          <div>
+            <div class="eyebrow">YOUR NUMBERS, MADE CLEAR</div>
+            <h1>Sales overview<span class="heading-dot">.</span></h1>
+            <p>From a simple CSV to your next business decision.</p>
+          </div>
+          <button id="export-button" class="button primary" disabled>
+            <span data-icon="download"></span
+            ><span id="export-label">Export PDF report</span
+            ><span class="button-shortcut" aria-hidden="true">↗</span>
+          </button>
+        </section>
+        <div class="workflow" aria-label="Workflow">
+          <div class="step current" id="step-upload">
+            <span>1</span>Upload CSV
+          </div>
+          <i></i>
+          <div class="step" id="step-clean">
+            <span>2</span>Review clean data
+          </div>
+          <i></i>
+          <div class="step" id="step-report">
+            <span>3</span>Explore & export
+          </div>
+          <small>One file. A clearer picture.</small>
+        </div>
+        <div id="alert" class="alert" role="alert" hidden></div>
+        <div id="status" class="sr-only" role="status" aria-live="polite"></div>
+        <section id="upload-section" class="upload-layout">
+          <div class="upload-intro">
+            <span class="section-tag"
+              ><span class="status-dot"></span> YOUR NEXT INSIGHT STARTS
+              HERE</span
+            >
+            <h2>Less spreadsheet.<br />More perspective.</h2>
+            <p>
+              Drop in your sales data. We'll tidy the rows, bring the numbers to
+              life, and get your report ready to share.
+            </p>
+            <div class="intro-check">
+              <span data-icon="check"></span>Automatic cleaning, with a clear
+              audit trail
+            </div>
+            <div class="intro-check">
+              <span data-icon="check"></span>Revenue, orders & product
+              performance
+            </div>
+            <div class="intro-check">
+              <span data-icon="check"></span>A polished PDF in one click
+            </div>
+            <div class="privacy-note">
+              <span data-icon="shield"></span>
+              <p>
+                Your CSV stays in memory on this server.<br />No database. No
+                third-party uploads.
+              </p>
+            </div>
+          </div>
+          <div class="upload-card">
+            <div class="card-kicker">01 / IMPORT YOUR DATA</div>
+            <h2>Let's see the bigger picture.</h2>
+            <p>Upload your sales CSV to build your dashboard.</p>
+            <div id="dropzone" class="dropzone">
+              <div class="upload-icon" data-icon="upload"></div>
+              <strong>Drag & drop your CSV here</strong
+              ><span>or choose a file from your computer</span
+              ><button id="browse-button" class="button dark">
+                <span data-icon="plus"></span>Choose CSV file</button
+              ><small>CSV only · Up to 5 MB · 25,000 rows</small
+              ><input
+                id="file-input"
+                type="file"
+                accept=".csv,text/csv"
+                class="sr-only"
+                tabindex="-1"
+                aria-label="Upload sales CSV"
+              />
+            </div>
+            <div class="sample-row">
+              <div>
+                <strong>Just exploring?</strong
+                ><span>Try our intentionally messy sample data.</span>
+              </div>
+              <button id="sample-button" class="button secondary">
+                Try sample <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+            <div class="format-note">
+              Required: <code>date</code><code>product</code
+              ><code>quantity</code><code>unit_price</code
+              ><button class="guide-button text-button">View format</button>
+            </div>
+          </div>
+        </section>
+        <section id="empty-notes" class="benefit-grid">
+          <article>
+            <span class="benefit-number">01</span>
+            <h3>Clean with confidence</h3>
+            <p>
+              Duplicates and invalid rows are accounted for. See exactly what
+              changed.
+            </p>
+          </article>
+          <article>
+            <span class="benefit-number">02</span>
+            <h3>See what matters</h3>
+            <p>
+              Track revenue trends, find top products, and explore sales by
+              region.
+            </p>
+          </article>
+          <article>
+            <span class="benefit-number">03</span>
+            <h3>Take the story with you</h3>
+            <p>
+              Export your current view and cleaning summary in a two-page PDF.
+            </p>
+          </article>
+        </section>
+        <div id="dashboard" hidden>
+          <section class="source-bar">
+            <div class="file-icon" data-icon="file"></div>
+            <div class="source-info">
+              <strong id="filename"></strong><span id="source-detail"></span>
+            </div>
+            <span class="ready-badge"
+              ><span class="status-dot"></span>Ready to explore</span
+            ><button id="replace-button" class="button secondary small">
+              <span data-icon="upload"></span>Replace CSV
+            </button>
+          </section>
+          <section id="quality" class="quality-card">
+            <div class="quality-heading">
+              <div>
+                <span class="quality-check" data-icon="check"></span
+                ><strong>Clean data. Clear starting point.</strong
+                ><span id="quality-description"></span>
+              </div>
+              <button
+                id="quality-toggle"
+                class="text-button"
+                aria-expanded="false"
+                aria-controls="quality-details"
+              >
+                View cleaning details <span aria-hidden="true">↓</span>
+              </button>
+            </div>
+            <div class="quality-stats">
+              <div>
+                <strong id="q-read">0</strong><span>Rows uploaded</span>
+              </div>
+              <span class="quality-arrow" aria-hidden="true">→</span>
+              <div><strong id="q-clean">0</strong><span>Clean rows</span></div>
+              <div>
+                <strong id="q-duplicates">0</strong
+                ><span>Duplicates removed</span>
+              </div>
+              <div>
+                <strong id="q-invalid">0</strong
+                ><span>Invalid rows removed</span>
+              </div>
+              <div>
+                <strong id="q-normalized">0</strong><span>Rows normalized</span>
+              </div>
+            </div>
+            <div id="quality-details" hidden></div>
+          </section>
+          <form id="filters" class="filters">
+            <div>
+              <span class="section-label">PERFORMANCE</span
+              ><span id="range-caption"></span>
+            </div>
+            <div class="filter-fields">
+              <label
+                ><span class="sr-only">Start date</span
+                ><input
+                  type="date"
+                  id="start-date"
+                  name="start"
+                  aria-label="Start date" /></label
+              ><span class="date-separator">–</span
+              ><label
+                ><span class="sr-only">End date</span
+                ><input
+                  type="date"
+                  id="end-date"
+                  name="end"
+                  aria-label="End date" /></label
+              ><label
+                ><span class="sr-only">Region</span
+                ><select id="region-filter" name="region" aria-label="Region">
+                  <option value="">All regions</option>
+                </select></label
+              ><button class="button secondary small" type="submit">
+                Apply</button
+              ><button
+                id="reset-filters"
+                class="icon-button"
+                type="button"
+                aria-label="Reset filters"
+                title="Reset filters"
+              >
+                <span data-icon="reset"></span>
+              </button>
+            </div>
+          </form>
+          <div id="no-results" class="alert" hidden>
+            No sales match these filters. Try a wider date range or reset the
+            filters.
+          </div>
+          <section class="metrics" aria-label="Sales metrics">
+            <article class="metric featured">
+              <div>Total revenue<span data-icon="wallet"></span></div>
+              <strong id="m-revenue">—</strong
+              ><span
+                ><span class="tiny-dot"></span
+                ><span id="revenue-note"
+                  >Across your selected period</span
+                ></span
+              >
+            </article>
+            <article class="metric">
+              <div>Total orders<span data-icon="bag"></span></div>
+              <strong id="m-orders">—</strong
+              ><span>Unique orders in this view</span>
+            </article>
+            <article class="metric">
+              <div>Average order value<span data-icon="chart"></span></div>
+              <strong id="m-average">—</strong><span>Revenue per order</span>
+            </article>
+            <article class="metric">
+              <div>Units sold<span data-icon="box"></span></div>
+              <strong id="m-units">—</strong><span>Total quantity sold</span>
+            </article>
+          </section>
+          <section class="charts-grid">
+            <article class="panel trend-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Revenue over time</h2>
+                  <p>Your sales story, month by month.</p>
+                </div>
+                <span class="chart-legend"
+                  ><span class="tiny-dot"></span>Revenue
+                  <span class="pill">Monthly</span></span
+                >
+              </div>
+              <div id="trend-chart" class="trend-chart"></div>
+              <div class="chart-footer">
+                <span id="trend-note"></span><span id="chart-currency"></span>
+              </div>
+            </article>
+            <article class="panel products-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Top products</h2>
+                  <p>The biggest contributors to your revenue.</p>
+                </div>
+                <span class="mini-icon" data-icon="box"></span>
+              </div>
+              <div id="products-chart"></div>
+              <div class="chart-footer">
+                Ranked by revenue <span>TOP 5</span>
+              </div>
+            </article>
+          </section>
+          <section class="bottom-grid">
+            <article id="preview" class="panel preview-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>A closer look at your data</h2>
+                  <p id="preview-caption">Cleaned sales, ready for analysis.</p>
+                </div>
+                <span class="pill">Cleaned data</span>
+              </div>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Product</th>
+                      <th>Region</th>
+                      <th class="numeric">Qty</th>
+                      <th class="numeric">Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody id="preview-body"></tbody>
+                </table>
+              </div>
+              <div class="table-pagination">
+                <span id="table-count"></span>
+                <div>
+                  <button
+                    id="previous-page"
+                    class="icon-button"
+                    aria-label="Previous rows"
+                  >
+                    ←</button
+                  ><span id="page-number"></span
+                  ><button
+                    id="next-page"
+                    class="icon-button"
+                    aria-label="Next rows"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            </article>
+            <article class="panel region-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Sales by region</h2>
+                  <p>Where your revenue comes from.</p>
+                </div>
+                <span data-icon="globe"></span>
+              </div>
+              <div id="regions-chart"></div>
+              <div class="region-total">
+                <span>Selected revenue</span><strong id="region-total"></strong>
+              </div>
+            </article>
+          </section>
+        </div>
+        <footer class="page-footer">
+          <span>Sales CSV Dashboard & PDF Report</span
+          ><span>Built for clarity. Ready to share.</span>
+        </footer>
+      </main>
+    </div>
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <div class="dialog-header">
+        <span class="section-tag">A QUICK GUIDE</span
+        ><button id="close-help" class="icon-button" aria-label="Close guide">
+          ×
+        </button>
+      </div>
+      <h2 id="help-title">Your CSV, ready to go.</h2>
+      <p>
+        Use a UTF-8 CSV with commas or semicolons. Column names are
+        case-insensitive; spaces and hyphens become underscores.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>What to include</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>date</code></td>
+              <td>YYYY-MM-DD, YYYY/MM/DD or US MM/DD/YYYY</td>
+            </tr>
+            <tr>
+              <td><code>product</code></td>
+              <td>A non-empty product name</td>
+            </tr>
+            <tr>
+              <td><code>quantity</code></td>
+              <td>A positive whole number (up to 1,000,000)</td>
+            </tr>
+            <tr>
+              <td><code>unit_price</code></td>
+              <td>A non-negative number, up to two decimal places</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Optional:</strong> <code>order_id</code>, <code>region</code>,
+        <code>category</code>, <code>currency</code>. Without an order ID, each
+        retained row counts as one order. Missing region/category values receive
+        a default label.
+      </p>
+      <p>
+        <strong>Currency:</strong> USD (default), EUR, GBP, CAD or AUD. Use one
+        currency per file; don't include currency symbols in prices. No exchange
+        conversion is performed.
+      </p>
+      <p>
+        <strong>Cleaning:</strong> Exact duplicate normalized rows are removed.
+        Invalid rows are excluded with a reason. Identical legitimate sales
+        without unique order IDs may be treated as duplicates.
+      </p>
+      <p>
+        <strong>Your PDF:</strong> Two pages covering metrics, monthly trends,
+        top products, active filters and the cleaning summary. Revenue is
+        quantity × unit price; refunds, discounts and taxes are not modeled.
+      </p>
+      <div class="dialog-footer">
+        <a class="button primary" href="/sample.csv" download
+          ><span data-icon="download"></span>Download sample CSV</a
+        ><span>5 MB maximum · 25,000 rows</span>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>
